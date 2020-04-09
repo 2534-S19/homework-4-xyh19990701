@@ -5,10 +5,10 @@ char uart_s[30],uart_rn=0,uart_sn=0,trans_uart=0;
 unsigned int  uart_r[1010]={0,0,0,0,},rchar, i =0 ;
 const  eUSCI_UART_ConfigV1  uartConfig =
 {
-   EUSCI_A_UART_CLOCKSOURCE_SMCLK,
-   19,
-   8,
-   0x55,
+   EUSCI_A_UART_CLOCKSOURCE_SMCLK,               // SMCLK Clock Source = 3MHz
+   19,                                           // UCBR   = 312  /N/16
+   8,                                            // UCBRF  = 8  // N%16
+   0x55,                                         // UCBRS  = 0x55  //fractional
    EUSCI_A_UART_NO_PARITY,                       // No Parity
    EUSCI_A_UART_LSB_FIRST,                       // LSB First
    EUSCI_A_UART_ONE_STOP_BIT,                    // One stop bit
@@ -18,12 +18,12 @@ const  eUSCI_UART_ConfigV1  uartConfig =
 
 void function(void)
 {
-    EUSCI_A_UART_transmitData(EUSCI_A0_BASE,'\n');
-    EUSCI_A_UART_transmitData(EUSCI_A0_BASE,'\n');
-    EUSCI_A_UART_transmitData(EUSCI_A0_BASE,'\r');
+    EUSCI_A_UART_transmitData(EUSCI_A0_BASE,'\n'); //return line
+    EUSCI_A_UART_transmitData(EUSCI_A0_BASE,'\n'); //return line
+    EUSCI_A_UART_transmitData(EUSCI_A0_BASE,'\r'); //go to the first word of line
 
-                  EUSCI_A_UART_transmitData(EUSCI_A0_BASE,'2');
-                  EUSCI_A_UART_transmitData(EUSCI_A0_BASE,'5');
+                  EUSCI_A_UART_transmitData(EUSCI_A0_BASE,'2');//this show the 2534 is the best course in the curriculum!
+                  EUSCI_A_UART_transmitData(EUSCI_A0_BASE,'5');//I use the transmitData to do it word by word
                   EUSCI_A_UART_transmitData(EUSCI_A0_BASE,'3');
                   EUSCI_A_UART_transmitData(EUSCI_A0_BASE,'4');
                   EUSCI_A_UART_transmitData(EUSCI_A0_BASE,' ');
@@ -65,9 +65,9 @@ void function(void)
                   EUSCI_A_UART_transmitData(EUSCI_A0_BASE,'m');
                   EUSCI_A_UART_transmitData(EUSCI_A0_BASE,'!');
 
-                  EUSCI_A_UART_transmitData(EUSCI_A0_BASE,'\n');
-                  EUSCI_A_UART_transmitData(EUSCI_A0_BASE,'\n');
-                  EUSCI_A_UART_transmitData(EUSCI_A0_BASE,'\r');
+                  EUSCI_A_UART_transmitData(EUSCI_A0_BASE,'\n');//return line
+                  EUSCI_A_UART_transmitData(EUSCI_A0_BASE,'\n');//return line
+                  EUSCI_A_UART_transmitData(EUSCI_A0_BASE,'\r');//go to the first word of line
 }
 void main(void)
 {
@@ -78,30 +78,29 @@ void main(void)
        // Make sure Tx AND Rx pins of EUSCI_A0 work for UART and not as regular GPIO pins.
        GPIO_setAsPeripheralModuleFunctionInputPin(GPIO_PORT_P1,GPIO_PIN2,GPIO_PRIMARY_MODULE_FUNCTION);
        GPIO_setAsPeripheralModuleFunctionOutputPin(GPIO_PORT_P1,GPIO_PIN3,GPIO_PRIMARY_MODULE_FUNCTION);
-
+       // initialize and enable EUSCI_A0
        UART_initModule(EUSCI_A0_BASE, &uartConfig);
        UART_enableModule(EUSCI_A0_BASE);
-        UART_enableInterrupt(EUSCI_A0_BASE, EUSCI_A_UART_RECEIVE_INTERRUPT);
+
+       UART_enableInterrupt(EUSCI_A0_BASE, EUSCI_A_UART_RECEIVE_INTERRUPT);
        Interrupt_enableMaster();
 
     while(1)
     {
-        for ( i = 0; i<=1000 ; i++)
+        for ( i = 0; i<=1000 ; i++)//for loop to check is that 2534
            {
-   if ((uart_r[i]==2) & (uart_r[i+1]==5)& (uart_r[i+2]==3)&(uart_r[i+3]==4) ) {function();uart_r[i]=0;}
+   if ((uart_r[i]==2) & (uart_r[i+1]==5)& (uart_r[i+2]==3)&(uart_r[i+3]==4) ) {function();uart_r[i]=0;}//check 2534 is continue word, then, show the results
            }
     if (UART_getInterruptStatus (EUSCI_A0_BASE, EUSCI_A_UART_RECEIVE_INTERRUPT_FLAG)
                       == EUSCI_A_UART_RECEIVE_INTERRUPT_FLAG)  {
-    if(('0'<=UART_receiveData(EUSCI_A0_BASE))&(UART_receiveData(EUSCI_A0_BASE)<'9'))
+    if(('0'<=UART_receiveData(EUSCI_A0_BASE))&(UART_receiveData(EUSCI_A0_BASE)<'9'))// receive data
        {
             EUSCI_A_UART_transmitData(EUSCI_A0_BASE,UART_receiveData(EUSCI_A0_BASE));
                 uart_r[uart_rn]=UART_receiveData(EUSCI_A0_BASE)&0x0f;
                 if(uart_rn>=30)uart_rn=0;else uart_rn++;
             }
     }
-
         }
-
     }
 
 
