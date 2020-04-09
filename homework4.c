@@ -1,46 +1,113 @@
 #include <ti/devices/msp432p4xx/driverlib/driverlib.h>
 #include "homework4.h"
-
-int main(void)
+unsigned int uart_r_tem=0;
+char uart_s[30],uart_rn=0,uart_sn=0,trans_uart=0;
+unsigned int  uart_r[1010]={0,0,0,0,},rchar, i =0 ;
+const  eUSCI_UART_ConfigV1  uartConfig =
 {
-    char rChar;
-    char *response = "\n\n\r2534 is the best course in the curriculum!\r\n\n";
+   EUSCI_A_UART_CLOCKSOURCE_SMCLK,
+   19,
+   8,
+   0x55,
+   EUSCI_A_UART_NO_PARITY,                       // No Parity
+   EUSCI_A_UART_LSB_FIRST,                       // LSB First
+   EUSCI_A_UART_ONE_STOP_BIT,                    // One stop bit
+   EUSCI_A_UART_MODE,                            // UART mode
+   EUSCI_A_UART_OVERSAMPLING_BAUDRATE_GENERATION // Oversampling
+};
 
-    // TODO: Declare the variables that main uses to interact with your state machine.
+void function(void)
+{
+    EUSCI_A_UART_transmitData(EUSCI_A0_BASE,'\n');
+    EUSCI_A_UART_transmitData(EUSCI_A0_BASE,'\n');
+    EUSCI_A_UART_transmitData(EUSCI_A0_BASE,'\r');
 
+                  EUSCI_A_UART_transmitData(EUSCI_A0_BASE,'2');
+                  EUSCI_A_UART_transmitData(EUSCI_A0_BASE,'5');
+                  EUSCI_A_UART_transmitData(EUSCI_A0_BASE,'3');
+                  EUSCI_A_UART_transmitData(EUSCI_A0_BASE,'4');
+                  EUSCI_A_UART_transmitData(EUSCI_A0_BASE,' ');
+                  EUSCI_A_UART_transmitData(EUSCI_A0_BASE,'i');
+                  EUSCI_A_UART_transmitData(EUSCI_A0_BASE,'s');
+                  EUSCI_A_UART_transmitData(EUSCI_A0_BASE,' ');
+                  EUSCI_A_UART_transmitData(EUSCI_A0_BASE,'t');
+                  EUSCI_A_UART_transmitData(EUSCI_A0_BASE,'h');
+                  EUSCI_A_UART_transmitData(EUSCI_A0_BASE,'e');
+                  EUSCI_A_UART_transmitData(EUSCI_A0_BASE,' ');
+                  EUSCI_A_UART_transmitData(EUSCI_A0_BASE,'b');
+                  EUSCI_A_UART_transmitData(EUSCI_A0_BASE,'e');
+                  EUSCI_A_UART_transmitData(EUSCI_A0_BASE,'s');
+                  EUSCI_A_UART_transmitData(EUSCI_A0_BASE,'t');
+                  EUSCI_A_UART_transmitData(EUSCI_A0_BASE,' ');
+                  EUSCI_A_UART_transmitData(EUSCI_A0_BASE,'c');
+                  EUSCI_A_UART_transmitData(EUSCI_A0_BASE,'o');
+                  EUSCI_A_UART_transmitData(EUSCI_A0_BASE,'u');
+                  EUSCI_A_UART_transmitData(EUSCI_A0_BASE,'r');
+                  EUSCI_A_UART_transmitData(EUSCI_A0_BASE,'s');
+                  EUSCI_A_UART_transmitData(EUSCI_A0_BASE,'e');
+                  EUSCI_A_UART_transmitData(EUSCI_A0_BASE,' ');
+                  EUSCI_A_UART_transmitData(EUSCI_A0_BASE,'i');
+                  EUSCI_A_UART_transmitData(EUSCI_A0_BASE,'n');
+                  EUSCI_A_UART_transmitData(EUSCI_A0_BASE,' ');
+                  EUSCI_A_UART_transmitData(EUSCI_A0_BASE,'t');
+                  EUSCI_A_UART_transmitData(EUSCI_A0_BASE,'h');
+                  EUSCI_A_UART_transmitData(EUSCI_A0_BASE,'e');
+                  EUSCI_A_UART_transmitData(EUSCI_A0_BASE,' ');
+                  EUSCI_A_UART_transmitData(EUSCI_A0_BASE,'c');
+                  EUSCI_A_UART_transmitData(EUSCI_A0_BASE,'u');
+                  EUSCI_A_UART_transmitData(EUSCI_A0_BASE,'r');
+                  EUSCI_A_UART_transmitData(EUSCI_A0_BASE,'r');
+                  EUSCI_A_UART_transmitData(EUSCI_A0_BASE,'i');
+                  EUSCI_A_UART_transmitData(EUSCI_A0_BASE,'c');
+                  EUSCI_A_UART_transmitData(EUSCI_A0_BASE,'u');
+                  EUSCI_A_UART_transmitData(EUSCI_A0_BASE,'l');
+                  EUSCI_A_UART_transmitData(EUSCI_A0_BASE,'u');
+                  EUSCI_A_UART_transmitData(EUSCI_A0_BASE,'m');
+                  EUSCI_A_UART_transmitData(EUSCI_A0_BASE,'!');
 
-    // Stops the Watchdog timer.
-    initBoard();
-    // TODO: Declare a UART config struct as defined in uart.h.
-    //       To begin, configure the UART for 9600 baud, 8-bit payload (LSB first), no parity, 1 stop bit.
+                  EUSCI_A_UART_transmitData(EUSCI_A0_BASE,'\n');
+                  EUSCI_A_UART_transmitData(EUSCI_A0_BASE,'\n');
+                  EUSCI_A_UART_transmitData(EUSCI_A0_BASE,'\r');
+}
+void main(void)
+{
+       uart_s[0] = '2534 is the best course in the curriculum!';
+       initBoard();
+       //  Declare a UART config struct as defined in uart.h.
+       // To begin, configure the UART for 9600 baud, 8-bit payload (LSB first), no parity, 1 stop bit.
+       // Make sure Tx AND Rx pins of EUSCI_A0 work for UART and not as regular GPIO pins.
+       GPIO_setAsPeripheralModuleFunctionInputPin(GPIO_PORT_P1,GPIO_PIN2,GPIO_PRIMARY_MODULE_FUNCTION);
+       GPIO_setAsPeripheralModuleFunctionOutputPin(GPIO_PORT_P1,GPIO_PIN3,GPIO_PRIMARY_MODULE_FUNCTION);
 
-
-    // TODO: Make sure Tx AND Rx pins of EUSCI_A0 work for UART and not as regular GPIO pins.
-
-
-    // TODO: Initialize EUSCI_A0
-
-
-    // TODO: Enable EUSCI_A0
-
+       UART_initModule(EUSCI_A0_BASE, &uartConfig);
+       UART_enableModule(EUSCI_A0_BASE);
+        UART_enableInterrupt(EUSCI_A0_BASE, EUSCI_A_UART_RECEIVE_INTERRUPT);
+       Interrupt_enableMaster();
 
     while(1)
     {
-        // TODO: Check the receive interrupt flag to see if a received character is available.
-        //       Return 0xFF if no character is available.
+        for ( i = 0; i<=1000 ; i++)
+           {
+   if ((uart_r[i]==2) & (uart_r[i+1]==5)& (uart_r[i+2]==3)&(uart_r[i+3]==4) ) {function();uart_r[i]=0;}
+           }
+    if (UART_getInterruptStatus (EUSCI_A0_BASE, EUSCI_A_UART_RECEIVE_INTERRUPT_FLAG)
+                      == EUSCI_A_UART_RECEIVE_INTERRUPT_FLAG)  {
+    if(('0'<=UART_receiveData(EUSCI_A0_BASE))&(UART_receiveData(EUSCI_A0_BASE)<'9'))
+       {
+            EUSCI_A_UART_transmitData(EUSCI_A0_BASE,UART_receiveData(EUSCI_A0_BASE));
+                uart_r[uart_rn]=UART_receiveData(EUSCI_A0_BASE)&0x0f;
+                if(uart_rn>=30)uart_rn=0;else uart_rn++;
+            }
+    }
 
-
-        // TODO: If an actual character was received, echo the character to the terminal AND use it to update the FSM.
-        //       Check the transmit interrupt flag prior to transmitting the character.
-
-
-
-        // TODO: If the FSM indicates a successful string entry, transmit the response string.
-        //       Check the transmit interrupt flag prior to transmitting each character and moving on to the next one.
-        //       Make sure to reset the success variable after transmission.
-
+        }
 
     }
+
+
+void EUSCIA0_IRQHandler(void)
+{
+   ;
 }
 
 void initBoard()
@@ -48,11 +115,9 @@ void initBoard()
     WDT_A_hold(WDT_A_BASE);
 }
 
-// TODO: FSM for detecting character sequence.
+//  FSM for detecting character sequence.
 bool charFSM(char rChar)
 {
     bool finished = false;
-
-
     return finished;
 }
